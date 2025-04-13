@@ -92,7 +92,7 @@ void DFS(int G[][7],int start,int n)
 
         for(int j =1;j<n;j++)
         {
-            if(G[start][j]==0 && visited[j]!=1)
+            if(G[start][j]==1 && visited[j]!=1)
             {
                 DFS(G,j,n);
             }
