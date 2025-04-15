@@ -18,6 +18,57 @@ struct  Node
     string key,value;
 } *root = nullptr;
 
+class QNode {
+    public:
+        Node* data;
+        QNode* next;
+        QNode(Node* d) 
+        {
+            data = d;
+            next = nullptr;
+        }
+    };
+
+class Queue {
+    public:
+    QNode *front, *rear;
+        
+    Queue() 
+    {
+        front = rear = nullptr;
+    }
+        
+    void enqueue(Node* node) 
+    {
+        QNode* temp = new QNode(node);
+        if (rear == nullptr) 
+        {
+            front = rear = temp;
+            return;
+        }
+        rear->next = temp;
+        rear = temp;
+    }
+        
+    Node* dequeue() 
+    {
+        if (front == nullptr)
+            return nullptr;
+        QNode* temp = front;
+        Node* data = front->data;
+        front = front->next;
+        if (front == nullptr)
+            rear = nullptr;
+        delete temp;
+        return data;
+    }
+        
+    bool isEmpty() 
+    {
+        return front == nullptr;
+    }
+};
+
 struct Node *Rinsert(struct Node *t,string k,string v)
 {
     Node *p;
@@ -173,10 +224,115 @@ struct Node *mirror(struct Node *temp)
     return nnode;
 };
 
+// Level Order traversal of the binary tree
+void LevelOrder(Node* root) 
+{
+    if (root == nullptr) return;
 
+    Queue q;
+    q.enqueue(root);
+
+    while (!q.isEmpty()) 
+    {
+        Node* temp = q.dequeue();
+        cout << "Key: " << temp->key << ", Value: " << temp->value << endl;
+
+        if (temp->lchild)
+            q.enqueue(temp->lchild);
+        if (temp->rchild)
+            q.enqueue(temp->rchild);
+    }
+}
 
 int main()
 {
+    int choice;
+    string key, value;
+    Node* result = nullptr;
+    Node* mirrored = nullptr;
+    Node* copied = nullptr;
+    
+    do {
+        cout << "\n==== Dictionary Menu ====\n";
+        cout << "1. Insert word\n";
+        cout << "2. Delete word\n";
+        cout << "3. Search word\n";
+        cout << "4. Display dictionary (Inorder Traversal)\n";
+        cout << "5. Mirror image of dictionary\n";
+        cout << "6. Create a copy of dictionary\n";
+        cout << "7. Display dictionary Level Wise\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+    
+        switch(choice) {
+            case 1:
+                cout << "Enter key: ";
+                cin >> key;
+                cout << "Enter value: ";
+                cin >> value;
+
+                if (Rsearch(root, key)) {
+                    cout << "Duplicate entry! Key already exists.\n";
+                } else {
+                    root = Rinsert(root, key, value);
+                    cout << "Inserted successfully.\n";
+                }
+                break;
+
+            case 2:
+                cout << "Enter key to delete: ";
+                cin >> key;
+                root = Rdelete(root, key);
+                cout << "Deleted (if found).\n";
+                break;
+
+            case 3:
+                cout << "Enter key to search: ";
+                cin >> key;
+                result = Rsearch(root, key);
+                if (result) {
+                    cout << "Found! Value: " << result->value << endl;
+                } else {
+                    cout << "Key not found.\n";
+                }
+                break;
+
+            case 4:
+                cout << "Inorder Traversal:\n";
+                inorder(root);
+                break;
+
+            case 5:
+                mirrored = mirror(root);
+                cout << "Mirror Image (Inorder Traversal):\n";
+                inorder(mirrored);
+                break;
+
+            case 6:
+                copied = copy(root);
+                cout << "Copied Dictionary (Inorder Traversal):\n";
+                inorder(copied);
+                break;
+
+            case 7:
+                cout << "Level Order Traversal:\n";
+                LevelOrder(root);
+                break;
+
+            case 0:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+
+    } while(choice != 0);
+
+    return 0;
+
+    /*DEMO CASES:-
     string k = "abc";
     string v = "abc";
 
@@ -205,5 +361,5 @@ int main()
 
     // Node *n = copy(root);
     // cout<<"Copy:-\n";
-    // inorder(n);
+    // inorder(n);*/
 }
