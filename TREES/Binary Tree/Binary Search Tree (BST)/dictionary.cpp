@@ -69,6 +69,7 @@ class Queue {
     }
 };
 
+//INSERTION
 struct Node *Rinsert(struct Node *t,string k,string v)
 {
     Node *p;
@@ -91,6 +92,7 @@ struct Node *Rinsert(struct Node *t,string k,string v)
     return t;
 }
 
+//INORDER TRAVERSAL
 void inorder(struct Node *t)
 {
     if(t!=nullptr)
@@ -101,6 +103,7 @@ void inorder(struct Node *t)
     }
 }
 
+//SEARCHING
 struct Node *Rsearch(struct Node *t,string k)
 {
     if(t==nullptr)
@@ -116,6 +119,7 @@ struct Node *Rsearch(struct Node *t,string k)
         return Rsearch(t->rchild,k);
 };
 
+//DELETION 
 int Height(struct Node *t)
 {
     if(t!=nullptr)
