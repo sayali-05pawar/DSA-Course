@@ -176,34 +176,65 @@ struct Node *InSus(struct Node *p)
     return p;
 }
 
-// struct Node *Delete(struct Node *t,int p,int s)
-// {
-//     Node *p;
-//     if(t == nullptr) return nullptr;
+struct Node *Delete(struct Node *t, int p)
+{
+    if (t == nullptr) return nullptr;
 
-//     if(t->lchild == nullptr && t->rchild == nullptr)
-//     {
-//         if(t==root) 
-//             return root = nullptr;
+    if (p < t->player_id)
+        t->lchild = Delete(t->lchild, p);
+    else if (p > t->player_id)
+        t->rchild = Delete(t->rchild, p);
+    else
+    {
+        // Node with only one child or no child
+        if (t->lchild == nullptr)
+        {
+            Node* temp = t->rchild;
+            if (t == root) root = temp;
+            delete t;
+            return temp;
+        }
+        else if (t->rchild == nullptr)
+        {
+            Node* temp = t->lchild;
+            if (t == root) root = temp;
+            delete t;
+            return temp;
+        }
 
-//         delete(t);
+        // Node with two children: Get inorder predecessor or successor
+        if (NodeHeight(t->lchild) > NodeHeight(t->rchild))
+        {
+            Node* inPre = InPre(t->lchild);
+            t->player_id = inPre->player_id;
+            t->scores = inPre->scores;
+            t->lchild = Delete(t->lchild, inPre->player_id);
+        }
+        else
+        {
+            Node* inSuc = InSus(t->rchild);
+            t->player_id = inSuc->player_id;
+            t->scores = inSuc->scores;
+            t->rchild = Delete(t->rchild, inSuc->player_id);
+        }
+    }
 
-        
+    t->height = NodeHeight(t);
 
-//         return nullptr;
-//     }
+    int bf = BalancedFactor(t);
 
-//     if(p < t->player_id)
-//         t->lchild = Delete(t->lchild,p,s);
-//     else if(p > t->player_id)
-//         t->rchild = Delete(t->rchild,p,s);
-//     else
-//     {
-//         if(NodeHeight(t) > NodeHeight)
-//     }
+    // Perform balancing rotations
+    if (bf == 2 && BalancedFactor(t->lchild) >= 0)
+        return LLrotation(t);
+    else if (bf == 2 && BalancedFactor(t->lchild) == -1)
+        return LRrotation(t);
+    else if (bf == -2 && BalancedFactor(t->rchild) <= 0)
+        return RRrotation(t);
+    else if (bf == -2 && BalancedFactor(t->rchild) == 1)
+        return RLrotation(t);
 
-
-// }
+    return t;
+}
 
 void Inorder(struct Node *root)
 {
@@ -217,10 +248,49 @@ void Inorder(struct Node *root)
 
 int main()
 {
-  root = Insert(root,10,11);
-  Insert(root,20,12);
-  Insert(root,30,13);
+    int choice, player_id, score;
 
-  cout << "Leaderboard (Inorder Traversal):\n";
-  Inorder(root);
+    while (true)
+    {
+        cout << "\n===== Multiplayer Game Menu =====\n";
+        cout << "1. Register Player\n";
+        cout << "2. Remove Player\n";
+        cout << "3. Display Leaderboard\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                cout << "Enter Player ID: ";
+                cin >> player_id;
+                cout << "Enter Score: ";
+                cin >> score;
+                root = Insert(root, player_id, score);
+                cout << "Player registered successfully!\n";
+                break;
+
+            case 2:
+                cout << "Enter Player ID to remove: ";
+                cin >> player_id;
+                root = Delete(root, player_id);
+                cout << "Player removed (if existed).\n";
+                break;
+
+            case 3:
+                cout << "\n==== Leaderboard ====\n";
+                Inorder(root);
+                cout << "\n=====================\n";
+                break;
+
+            case 4:
+                cout << "Exiting the game. GG!\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+    }
+    return 0;
 }
